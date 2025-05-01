@@ -1,0 +1,43 @@
+# === BUILD OUTPUT ===
+/build/
+*.elf
+*.hex
+*.bin
+*.map
+*.lst
+
+# === CMAKE-GENERATED FILES ===
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+compile_commands.json
+CMakePresets.json
+
+# === STM32CubeMX ===
+*.mxproject
+
+# === VS CODE ===
+.vscode/
+
+# === SYSTEM / IDE JUNK ===
+.DS_Store
+*.swo
+*.swp
+*.log
+*.tmp
+.idea/
+
+# === BACKUP FILES ===
+*~
+*.bak
+*.orig
+*.old
+
+# === OBJECT FILES ===
+*.o
+*.d
+*.a
+*.gcda
+*.gcno
+*.gcov
