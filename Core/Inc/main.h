@@ -79,10 +79,6 @@ void Error_Handler(void);
 #define OTG_FS_OC_GPIO_Port GPIOC
 #define BOOT1_Pin GPIO_PIN_2
 #define BOOT1_GPIO_Port GPIOB
-#define TE_Pin GPIO_PIN_11
-#define TE_GPIO_Port GPIOD
-#define RDX_Pin GPIO_PIN_12
-#define RDX_GPIO_Port GPIOD
 #define LCD_DC_Pin GPIO_PIN_13
 #define LCD_DC_GPIO_Port GPIOD
 #define I2C3_SDA_Pin GPIO_PIN_9
@@ -97,8 +93,6 @@ void Error_Handler(void);
 #define SWDIO_GPIO_Port GPIOA
 #define SWCLK_Pin GPIO_PIN_14
 #define SWCLK_GPIO_Port GPIOA
-#define TP_INT1_Pin GPIO_PIN_15
-#define TP_INT1_GPIO_Port GPIOA
 #define LD3_Pin GPIO_PIN_13
 #define LD3_GPIO_Port GPIOG
 #define LD4_Pin GPIO_PIN_14

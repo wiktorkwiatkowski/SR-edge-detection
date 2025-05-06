@@ -1,5 +1,12 @@
 #include "ILI9341_driver.h"
 
+static const uint8_t* dma_image_ptr = NULL;
+static uint32_t dma_image_remaining = 0;
+
+// Flaga, czy DMA nadal działa
+// 1 - działa, 0 - nie działa
+static volatile uint8_t lcd_dma_busy = 0;
+
 void ILI9341_write_command(uint8_t cmd) {
     HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(LCD_DC_GPIO_Port, LCD_DC_Pin, GPIO_PIN_RESET);
@@ -141,9 +148,6 @@ void ILI9341_init(void) {
 
     // TURN ON DISPLAY
     ILI9341_write_command(0x29);
-
-    // MEMORY WRITE
-    ILI9341_write_command(0x2C);
 }
 
 void ILI9341_set_address(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2) {
@@ -161,17 +165,59 @@ void ILI9341_set_address(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2) {
     ILI9341_write_data(Y2 >> 8);    // górny bajt Y2
     ILI9341_write_data(Y2 & 0xFF);  // dolny bajt Y2
 
-    // Zapisz do ramu
+    // Ustaw wskaźnik w pamięci gram na takie wiersze i kolumny jak wyżej
     ILI9341_write_command(0x2C);
 }
 
-void ILI9341_draw_image(uint16_t x, uint16_t y, uint16_t width, uint16_t height,
-                        const uint8_t* image) {
+void ILI9341_draw_image(uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t* image) {
     // Ustaw obszar rysowania
-    ILI9341_set_address(x, y, x + width - 1, y + height - 1);
-
+    ILI9341_set_address(x, y, width - 1, height - 1);
     // Wysyłaj dane pikseli RGB565 bajt po bajcie
     for (uint32_t i = 0; i < width * height * 2; i++) {
         ILI9341_write_data(image[i]);
+    }
+}
+
+void ILI9341_draw_image_DMA(uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t* image) {
+    // 1. Ustaw adres rysowania
+    // ILI9341_set_address(x, y, x+ width - 1, y + height - 1);
+
+    // HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_RESET);
+    // HAL_GPIO_WritePin(LCD_DC_GPIO_Port, LCD_DC_Pin, GPIO_PIN_SET);
+    // // 3. Start DMA transmisji
+    // HAL_SPI_Transmit_DMA(&hspi5, image, width * height * 2);
+
+    // Sprawdzenie, czy dma działa 
+    if (lcd_dma_busy) return;
+    lcd_dma_busy = 1;
+
+    ILI9341_set_address(x, y, x + width - 1, y + height - 1);
+    ILI9341_write_command(0x2C);
+
+    HAL_GPIO_WritePin(LCD_DC_GPIO_Port, LCD_DC_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_RESET);
+
+    dma_image_ptr = image;
+    dma_image_remaining = width * height * 2;
+
+    ILI9341_DMA_continue(); // start pierwszej porcji
+}
+
+void ILI9341_DMA_continue(void) {
+    if (dma_image_remaining > 0) {
+        // Pobranie rozmiaru porcji do wysłania jak więcej niż limit DMA to weź całość
+        uint32_t chunk = (dma_image_remaining > 65535) ? 65535 : dma_image_remaining;
+
+        HAL_SPI_Transmit_DMA(&hspi5, (uint8_t*)dma_image_ptr, chunk);
+        
+        // Przesunięcie wskaźnika o tyle bajtów ile zostało wysłanych
+        dma_image_ptr += chunk;
+        
+        // Zmniejsz pozostałą liczbę bajtów do wysłania
+        dma_image_remaining -= chunk;
+    } else {
+        // Jeśli nic nie zostało, koniec komunikacji, zwolnienie flagi
+        HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_SET);
+        lcd_dma_busy = 0;
     }
 }
