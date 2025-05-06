@@ -15,6 +15,7 @@
 void ILI9341_write_command(uint8_t cmd);
 void ILI9341_write_data(uint8_t data);
 void ILI9341_init();
+void ILI9341_set_address(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2);
 
 
 #endif

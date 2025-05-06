@@ -14,8 +14,7 @@ void ILI9341_write_data(uint8_t data) {
     HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_SET);
 }
 
-void ILI9341_init(void)
-{
+void ILI9341_init(void) {
     // SOFTWARE RESET
     ILI9341_write_command(0x01);
     HAL_Delay(1000);
@@ -75,11 +74,11 @@ void ILI9341_init(void)
 
     // MEMORY ACCESS CONTROL
     ILI9341_write_command(0x36);
-    ILI9341_write_data(0x48); // MX, BGR
+    ILI9341_write_data(0x48);  // MX, BGR
 
     // PIXEL FORMAT
     ILI9341_write_command(0x3A);
-    ILI9341_write_data(0x55); // 16bit/pixel
+    ILI9341_write_data(0x55);  // 16bit/pixel
 
     // FRAME RATE CONTROL
     ILI9341_write_command(0xB1);
@@ -142,5 +141,26 @@ void ILI9341_init(void)
 
     // TURN ON DISPLAY
     ILI9341_write_command(0x29);
+
+    // MEMORY WRITE
+    ILI9341_write_command(0x2C);
 }
 
+void ILI9341_set_address(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2) {
+    // Ustawienie kolumn (oś X)
+    ILI9341_write_command(0x2A);
+    ILI9341_write_data(X1 >> 8);    // górny bajt X1
+    ILI9341_write_data(X1 & 0xFF);  // dolny bajt X1
+    ILI9341_write_data(X2 >> 8);    // górny bajt X2
+    ILI9341_write_data(X2 & 0xFF);  // dolny bajt X2
+
+    // Ustawienie wierszy (oś Y)
+    ILI9341_write_command(0x2B);
+    ILI9341_write_data(Y1 >> 8);    // górny bajt Y1
+    ILI9341_write_data(Y1 & 0xFF);  // dolny bajt Y1
+    ILI9341_write_data(Y2 >> 8);    // górny bajt Y2
+    ILI9341_write_data(Y2 & 0xFF);  // dolny bajt Y2
+
+    // Zapisz do ramu
+    ILI9341_write_command(0x2C);
+}
