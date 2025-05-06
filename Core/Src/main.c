@@ -26,7 +26,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "ILI9341_driver.h"
+#include "images/cat.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -95,7 +96,8 @@ int main(void)
   MX_SPI5_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  
+  ILI9341_init();
+  ILI9341_draw_image(0, 0, 240, 320, cat);
   /* USER CODE END 2 */
 
   /* Infinite loop */

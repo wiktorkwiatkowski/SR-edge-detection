@@ -17,7 +17,7 @@ void ILI9341_write_data(uint8_t data) {
 void ILI9341_init(void) {
     // SOFTWARE RESET
     ILI9341_write_command(0x01);
-    HAL_Delay(1000);
+    HAL_Delay(100);
 
     // POWER CONTROL A
     ILI9341_write_command(0xCB);
@@ -163,4 +163,15 @@ void ILI9341_set_address(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2) {
 
     // Zapisz do ramu
     ILI9341_write_command(0x2C);
+}
+
+void ILI9341_draw_image(uint16_t x, uint16_t y, uint16_t width, uint16_t height,
+                        const uint8_t* image) {
+    // Ustaw obszar rysowania
+    ILI9341_set_address(x, y, x + width - 1, y + height - 1);
+
+    // Wysyłaj dane pikseli RGB565 bajt po bajcie
+    for (uint32_t i = 0; i < width * height * 2; i++) {
+        ILI9341_write_data(image[i]);
+    }
 }
