@@ -179,14 +179,6 @@ void ILI9341_draw_image(uint16_t x, uint16_t y, uint16_t width, uint16_t height,
 }
 
 void ILI9341_draw_image_DMA(uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t* image) {
-    // 1. Ustaw adres rysowania
-    // ILI9341_set_address(x, y, x+ width - 1, y + height - 1);
-
-    // HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_RESET);
-    // HAL_GPIO_WritePin(LCD_DC_GPIO_Port, LCD_DC_Pin, GPIO_PIN_SET);
-    // // 3. Start DMA transmisji
-    // HAL_SPI_Transmit_DMA(&hspi5, image, width * height * 2);
-
     // Sprawdzenie, czy dma działa 
     if (lcd_dma_busy) return;
     lcd_dma_busy = 1;
