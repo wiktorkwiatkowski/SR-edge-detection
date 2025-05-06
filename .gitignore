@@ -41,3 +41,6 @@ CMakePresets.json
 *.gcda
 *.gcno
 *.gcov
+
+# === PYTHON FILES ===
+*.py
