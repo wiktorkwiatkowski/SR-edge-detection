@@ -9,10 +9,12 @@
 #define ILI9341_WIDTH 240
 #define ILI9341_HEIGHT 420
 
+#define ILI9341
 
 
-void ILI9341_Write_Command(uint8_t cmd);
-void ILI9341_Write_Data(uint8_t data);
+void ILI9341_write_command(uint8_t cmd);
+void ILI9341_write_data(uint8_t data);
+void ILI9341_init();
 
 
 #endif
