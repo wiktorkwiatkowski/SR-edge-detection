@@ -19,7 +19,9 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "crc.h"
+#include "dcmi.h"
 #include "dma.h"
+#include "i2c.h"
 #include "spi.h"
 #include "usart.h"
 #include "gpio.h"
@@ -28,6 +30,8 @@
 /* USER CODE BEGIN Includes */
 #include "ILI9341_driver.h"
 #include "images/cat.h"
+#include <stdio.h>
+#include "OV7670_driver/OV7670.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -95,10 +99,18 @@ int main(void)
   MX_CRC_Init();
   MX_SPI5_Init();
   MX_USART1_UART_Init();
+  MX_DCMI_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   ILI9341_init();
   // ILI9341_draw_image(0, 0, 240, 320, cat);
   ILI9341_draw_image_DMA(0, 0, 240, 320, cat);
+  while(OV7670_init(&hdcmi, &hdma_dcmi, &hi2c1) != HAL_OK){
+    HAL_Delay(500);
+    HAL_GPIO_TogglePin(RED_LED_GPIO_Port, RED_LED_Pin);
+    HAL_Delay(500);
+  }
+  HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_RESET);
 
   /* USER CODE END 2 */
 
@@ -162,9 +174,15 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+  HAL_RCC_MCOConfig(RCC_MCO1, RCC_MCO1SOURCE_PLLCLK, RCC_MCODIV_4);
 }
 
 /* USER CODE BEGIN 4 */
+int _write(int file, char *ptr, int len) {
+  (void)file;
+  HAL_UART_Transmit(&huart1 , (uint8_t *)ptr , len , 50);
+  return len;
+}
 
 // Callback po zakończeniu DMA
 void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {

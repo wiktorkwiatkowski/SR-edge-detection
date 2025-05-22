@@ -65,16 +65,18 @@ void Error_Handler(void);
 #define LCD_CS_GPIO_Port GPIOC
 #define B1_Pin GPIO_PIN_0
 #define B1_GPIO_Port GPIOA
+#define CAMERA_RESET_Pin GPIO_PIN_4
+#define CAMERA_RESET_GPIO_Port GPIOC
 #define LCD_DC_Pin GPIO_PIN_13
 #define LCD_DC_GPIO_Port GPIOD
 #define STLINK_RX_Pin GPIO_PIN_9
 #define STLINK_RX_GPIO_Port GPIOA
 #define STLINK_TX_Pin GPIO_PIN_10
 #define STLINK_TX_GPIO_Port GPIOA
-#define LD3_Pin GPIO_PIN_13
-#define LD3_GPIO_Port GPIOG
-#define LD4_Pin GPIO_PIN_14
-#define LD4_GPIO_Port GPIOG
+#define GREEN_LED_Pin GPIO_PIN_13
+#define GREEN_LED_GPIO_Port GPIOG
+#define RED_LED_Pin GPIO_PIN_14
+#define RED_LED_GPIO_Port GPIOG
 
 /* USER CODE BEGIN Private defines */
 
