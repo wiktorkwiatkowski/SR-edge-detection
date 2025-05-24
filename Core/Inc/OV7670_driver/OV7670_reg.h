@@ -12,26 +12,31 @@ typedef struct {
 
 // Registers
 const uint8_t OV7670_reg[][2] = {
+    
     /* Color mode related */
-    {0x12, 0x14},         // QVGA, RGB
+    {0x12, 0x14},         // QVGA, RGB 0001 0100
     {0x8C, 0x00},         // RGB444 Disable
-    {0x40, 0x10 + 0xc0},  // RGB565, 00 - FF
-    {0x3A, 0x04 + 8},     // UYVY (why?)
-    {0x3D, 0x80 + 0x00},  // gamma enable, UV auto adjust, UYVY
+    {0x40, 0xd0},  // RGB565, 00 - FF 1101 0000 8+4+1 
+
+    // bez + 8 działa lepiej
+    // {0x3A, 0x04 + 8 }
+    {0x3A, 0x04},     // UYVY (why?)
+    {0x3D, 0x80},  // gamma enable, UV auto adjust, UYVY
     {0xB0, 0x84},         // important
 
     /* clock related */
     {0x0C, 0x04},  // DCW enable
     {0x3E, 0x19},  // manual scaling, pclk/=2
-    {0x70, 0x3A},  // scaling_xsc
-    {0x71, 0x35},  // scaling_ysc
-    {0x72, 0x11},  // down sample by 2
+    {0x70, 0x3A},  // scaling_xsc 0011 1010
+    {0x71, 0x35},  // 
+
+    {0x72, 0x11},  // down sample by 2 0010 0010
     {0x73, 0xf1},  // DSP clock /= 2
 
     /* windowing (empirically decided...) */
-    {0x17, 0x16},  // HSTART
+    {0x17, 0x16},  // HSTART 
     {0x18, 0x04},  // HSTOP
-    {0x32, 0x80},  // HREF
+    {0x32, 0x80},  // HREF 
     {0x19, 0x03},  // VSTART =  14 ( = 3 * 4 + 2)
     {0x1a, 0x7b},  // VSTOP  = 494 ( = 123 * 4 + 2)
     {0x03, 0x0a},  // VREF (VSTART_LOW = 2, VSTOP_LOW = 2)
@@ -105,10 +110,12 @@ const uint8_t OV7670_reg[][2] = {
 
     /* fps */
     //  {0x6B, 0x4a}, //PLL  x4
-    {0x11, 0x00},  // pre-scalar = 1/1
+    {0x11, 0x00},  // pre-scalar = 1/1 
 
     /* others */
-    {0x1E, 0x31},  // mirror flip
+    // {0x1E, 0x31},  // mirror ov text is top
+    {0x1E, 0x1a},  // mirror pins are top
+
     //  {0x42, 0x08}, // color bar
 
     {EOC, EOF},
