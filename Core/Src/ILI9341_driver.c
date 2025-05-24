@@ -1,6 +1,6 @@
 #include "ILI9341_driver.h"
 
-static const uint8_t* dma_image_ptr = NULL;
+static uint8_t* dma_image_ptr = NULL;
 static uint32_t dma_image_remaining = 0;
 
 // Flaga, czy DMA nadal działa
@@ -169,7 +169,7 @@ void ILI9341_set_address(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2) {
     ILI9341_write_command(0x2C);
 }
 
-void ILI9341_draw_image(uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t* image) {
+void ILI9341_draw_image(uint16_t x, uint16_t y, uint16_t width, uint16_t height,  uint8_t* image) {
     // Ustaw obszar rysowania
     ILI9341_set_address(x, y, width - 1, height - 1);
     // Wysyłaj dane pikseli RGB565 bajt po bajcie
@@ -178,7 +178,7 @@ void ILI9341_draw_image(uint16_t x, uint16_t y, uint16_t width, uint16_t height,
     }
 }
 
-void ILI9341_draw_image_DMA(uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t* image) {
+void ILI9341_draw_image_DMA(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t* image) {
     // Sprawdzenie, czy dma działa 
     if (lcd_dma_busy) return;
     lcd_dma_busy = 1;

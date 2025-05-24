@@ -29,7 +29,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "ILI9341_driver.h"
-#include "images/cat.h"
+// #include "images/cat.h"
 #include <stdio.h>
 #include "OV7670_driver/OV7670.h"
 /* USER CODE END Includes */
@@ -52,7 +52,10 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+uint8_t done = 0x00;
 volatile uint8_t spi_dma_done = 0;
+
+uint32_t frame_buffer[ (OV7670_QVGA_HEIGHT * OV7670_QVGA_WIDTH)/2];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -103,20 +106,44 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   ILI9341_init();
+  printf("MAIN STARTING...\r\n");
+
   // ILI9341_draw_image(0, 0, 240, 320, cat);
-  ILI9341_draw_image_DMA(0, 0, 240, 320, cat);
   while(OV7670_init(&hdcmi, &hdma_dcmi, &hi2c1) != HAL_OK){
     HAL_Delay(500);
     HAL_GPIO_TogglePin(RED_LED_GPIO_Port, RED_LED_Pin);
     HAL_Delay(500);
   }
+  // ILI9341_draw_image_DMA(0,0,240,320,cat);
+
+
   HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_RESET);
+
+  OV7670_start_capture((uint32_t)frame_buffer);
+
+  // printf("sizeof buffor %d", sizeof(frame_buffer)/sizeof(frame_buffer[0]));
+  uint8_t* data = (uint8_t*)frame_buffer;
+      uint32_t total = 320 * 240 * 2;
+      uint32_t offset = 0;
+  printf("Adres buforu w setup: 0x%p\r\r", (void *)frame_buffer);
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1){
+  //   if (done == 0xff) {
+  //     printf("\n\rpoczatek\r\n");
+
+  //   while (offset < total) {
+  //     uint16_t chunk = (total - offset > 65535) ? 65535 : (total - offset);
+  //     HAL_UART_Transmit(&huart1, data + offset, chunk, HAL_MAX_DELAY);
+  //   offset += chunk;
+  //   }
+  //     done = 0x00;
+  //     printf("\n\rkoniec\r\n");
+  // }
+  
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -191,6 +218,15 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
   }
 }
 
+void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi) {
+  printf("Frame received!\r\n");
+  ILI9341_draw_image_DMA(0, 0, 240, 320, (uint8_t *)frame_buffer);
+  done = 0xFF;
+
+  // printf("Rysuję %u\r\n", sizeof(frame_buffer));  // Powinno wypisać 153600
+
+  // HAL_UART_Transmit(&huart1, (uint8_t*)frame_buffer, 320 * 240 * 2, HAL_MAX_DELAY);
+}
 
 
 /* USER CODE END 4 */

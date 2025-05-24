@@ -1,11 +1,13 @@
 #include "OV7670_driver/OV7670.h"
 #include "OV7670_driver/OV7670_reg.h"
 
-
 /*** Internal Const Values, Macros ***/
-#define OV7670_QVGA_WIDTH 320
-#define OV7670_QVGA_HEIGHT 240
+// #define OV7670_QVGA_WIDTH 320
+// #define OV7670_QVGA_HEIGHT 240
 #define SLAVE_ADDR 0x42
+// #define FRAME_SIZE    (OV7670_QVGA_WIDTH * OV7670_QVGA_HEIGHT)
+
+// uint32_t frame_buffer[FRAME_SIZE / 4];
 
 /*** Internal Static Variables ***/
 static DCMI_HandleTypeDef* s_hdcmi;
@@ -34,7 +36,8 @@ static HAL_StatusTypeDef OV7670_read(uint8_t regAddr, uint8_t* data) {
     return ret;
 }
 
-HAL_StatusTypeDef OV7670_init(DCMI_HandleTypeDef* hdcmi, DMA_HandleTypeDef* hdma_dcmi, I2C_HandleTypeDef* hi2c) {
+HAL_StatusTypeDef OV7670_init(DCMI_HandleTypeDef* hdcmi, DMA_HandleTypeDef* hdma_dcmi,
+                              I2C_HandleTypeDef* hi2c) {
     s_hdcmi = hdcmi;
     s_hdma_dcmi = hdma_dcmi;
     s_hi2c = hi2c;
@@ -50,7 +53,7 @@ HAL_StatusTypeDef OV7670_init(DCMI_HandleTypeDef* hdcmi, DMA_HandleTypeDef* hdma
 
     uint8_t buffer[1];
     OV7670_read(0x0b, buffer);
-    printf("[OV7670] dev id = 0x%02X \r\n", buffer[0]);
+    printf("[OV7670] dev id = 0x%X \r\n", buffer[0]);
     if (buffer[0] != 0x73)
         return HAL_ERROR;
     else
@@ -65,4 +68,14 @@ static void OV7670_write_config() {
         OV7670_write(OV7670_reg[i][0], OV7670_reg[i][1]);
         HAL_Delay(1);
     }
+}
+
+HAL_StatusTypeDef OV7670_start_capture(uint32_t buffor) {
+    printf("Adres buforu start capture: 0x%lX\r\n", buffor);
+    if(HAL_DCMI_Start_DMA(s_hdcmi, DCMI_MODE_CONTINUOUS, buffor, (OV7670_QVGA_HEIGHT * OV7670_QVGA_WIDTH) / 2) == HAL_OK){
+        printf("DCMI DMA started\r\n");
+    }else{
+        printf("failed\r\n");
+    }
+    return HAL_OK; 
 }
