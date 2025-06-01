@@ -86,8 +86,7 @@ static void OV7670_write_config() {
 
 HAL_StatusTypeDef OV7670_start_capture(uint32_t buffor) {
     printf("Adres buforu start capture: 0x%lX\r\n", buffor);
-    if (HAL_DCMI_Start_DMA(s_hdcmi, DCMI_MODE_CONTINUOUS, buffor,
-                           (OV7670_QVGA_HEIGHT * OV7670_QVGA_WIDTH) / 2) == HAL_OK) {
+    if (HAL_DCMI_Start_DMA(s_hdcmi, DCMI_MODE_CONTINUOUS, buffor, (OV7670_QVGA_HEIGHT * OV7670_QVGA_WIDTH) / 8) == HAL_OK) {
         printf("DCMI DMA started\r\n");
     } else {
         printf("failed\r\n");

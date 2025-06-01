@@ -55,7 +55,7 @@
 uint8_t done = 0x00;
 volatile uint8_t spi_dma_done = 0;
 
-uint32_t frame_buffer[ (OV7670_QVGA_HEIGHT * OV7670_QVGA_WIDTH)/2];
+uint32_t frame_buffer[ (OV7670_QVGA_HEIGHT * OV7670_QVGA_WIDTH)/8];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -172,10 +172,17 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 4;
-  RCC_OscInitStruct.PLL.PLLN = 168;
+  RCC_OscInitStruct.PLL.PLLN = 180;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 3;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Activate the Over-Drive mode
+  */
+  if (HAL_PWREx_EnableOverDrive() != HAL_OK)
   {
     Error_Handler();
   }
@@ -212,10 +219,9 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
 
 void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi) {
   printf("Frame received!\r\n");
-  ILI9341_draw_image_DMA(0, 0, 240, 320, (uint8_t *)frame_buffer);
+  ILI9341_draw_image_DMA(0, 120, 240, 80, (uint8_t *)frame_buffer);
   done = 0xFF;
 
-  // printf("Rysuję %u\r\n", sizeof(frame_buffer));  // Powinno wypisać 153600
 
   // HAL_UART_Transmit(&huart1, (uint8_t*)frame_buffer, 320 * 240 * 2, HAL_MAX_DELAY);
 }

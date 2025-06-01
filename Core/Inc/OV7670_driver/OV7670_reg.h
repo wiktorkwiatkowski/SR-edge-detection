@@ -3,7 +3,7 @@
 
 #include "stm32f4xx_hal.h"
 
-#define EOC 0xFF
+#define EOC 0xFF // end of file
 const uint8_t OV7670r[][2] = {
 	
 	// Image format
@@ -55,7 +55,6 @@ const uint8_t OV7670_reg[][2] = {
     {0x3E, 0x1B},  // manual scaling, pclk/=2 // JAK to zmieniam to się zmienia obraz
     {0x70, 0x3A},  // scaling_xsc 0011 1010
     {0x71, 0x35},  // 
-
     {0x72, 0x11},  // down sample by 2 0010 0010
     {0x73, 0xf1},  // DSP clock /= 2
     /* windowing (empirically decided...) */
