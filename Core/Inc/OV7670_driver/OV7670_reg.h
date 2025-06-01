@@ -4,6 +4,7 @@
 #include "stm32f4xx_hal.h"
 
 #define EOC 0xFF // end of file
+
 const uint8_t OV7670r[][2] = {
 	
 	// Image format

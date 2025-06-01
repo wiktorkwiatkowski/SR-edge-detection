@@ -41,7 +41,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -56,6 +55,7 @@ uint8_t done = 0x00;
 volatile uint8_t spi_dma_done = 0;
 
 uint32_t frame_buffer[ (OV7670_QVGA_HEIGHT * OV7670_QVGA_WIDTH)/8];
+uint32_t cropped_frame[(DEST_WIDTH * DEST_HEIGHT) / 2]; 
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -119,12 +119,6 @@ int main(void)
   HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_RESET);
 
   OV7670_start_capture((uint32_t)frame_buffer);
-
-  // printf("sizeof buffor %d", sizeof(frame_buffer)/sizeof(frame_buffer[0]));
-  uint8_t* data = (uint8_t*)frame_buffer;
-      uint32_t total = 320 * 240 * 2;
-      uint32_t offset = 0;
-  printf("Adres buforu w setup: 0x%p\r\r", (void *)frame_buffer);
 
   /* USER CODE END 2 */
 
@@ -219,11 +213,10 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
 
 void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi) {
   printf("Frame received!\r\n");
-  ILI9341_draw_image_DMA(0, 120, 240, 80, (uint8_t *)frame_buffer);
-  done = 0xFF;
+  OV7670_crop_to_80x80(frame_buffer, cropped_frame);
 
-
-  // HAL_UART_Transmit(&huart1, (uint8_t*)frame_buffer, 320 * 240 * 2, HAL_MAX_DELAY);
+  // ILI9341_draw_image_DMA(0, 120, 240, 80, (uint8_t *)frame_buffer);
+  ILI9341_draw_image_DMA(80, 120, 80, 80, (uint8_t*)cropped_frame);
 }
 
 

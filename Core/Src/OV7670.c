@@ -1,14 +1,10 @@
 #include "OV7670_driver/OV7670.h"
-
 #include "OV7670_driver/OV7670_reg.h"
+#include <string.h>
 
 /*** Internal Const Values, Macros ***/
-// #define OV7670_QVGA_WIDTH 320
-// #define OV7670_QVGA_HEIGHT 240
 #define SLAVE_ADDR 0x42
-// #define FRAME_SIZE    (OV7670_QVGA_WIDTH * OV7670_QVGA_HEIGHT)
 
-// uint32_t frame_buffer[FRAME_SIZE / 4];
 
 /*** Internal Static Variables ***/
 static DCMI_HandleTypeDef* s_hdcmi;
@@ -92,4 +88,11 @@ HAL_StatusTypeDef OV7670_start_capture(uint32_t buffor) {
         printf("failed\r\n");
     }
     return HAL_OK;
+}
+void OV7670_crop_to_80x80(uint32_t* src, uint32_t* dst) {
+    for (int y = 0; y < DEST_HEIGHT; ++y) {
+        int src_offset = y * (SRC_WIDTH / 2);  // Przesuń do początku danego wiersza
+        int dst_offset = y * (DEST_WIDTH / 2); // Tam wrzucisz wynik
+        memcpy(&dst[dst_offset], &src[src_offset], DEST_WIDTH * 2); // 80 pikseli × 2 bajty
+    }
 }
