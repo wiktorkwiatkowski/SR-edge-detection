@@ -27,7 +27,7 @@ void image_to_grayscale(uint16_t *image_input, uint8_t *image_output, uint8_t wi
 
 void grayscale_to_rgb565(uint8_t *grayscale_image, uint16_t *rgb565_output, uint8_t width, uint8_t height){
     for(uint32_t i = 0; i < width*height; i++){
-        uint8_t gray = temp_buf4[i];
+        uint8_t gray = temp_buf2[i];
 
         uint8_t r = gray >> 3;
         uint8_t g = gray >> 2;
@@ -40,6 +40,8 @@ void grayscale_to_rgb565(uint8_t *grayscale_image, uint16_t *rgb565_output, uint
 void canny(){
     smooth();
     count_gradient();
+    threshold();
+    track_edges();
 }
 
 /*temp_buf1 -> original image*/
@@ -169,4 +171,51 @@ int round_angle(double angle)
     else if((112.5 <= degrees && degrees < 157.5) ||  (-67.5 <= degrees && degrees < -22.5)) degrees = 4;       //zakres: <112.5;157.5)u<-67.5;22.5)                -> skos NW SE
     else degrees = 0;
     return degrees;
+}
+
+// temp_buf4 -> suppression
+// reszta "wolne"
+
+void threshold(){
+        for(int y = 0; y < HEIGHT; y++){
+        for(int x = 0; x < WIDTH; x++){
+            if(temp_buf4[y * HEIGHT + x] <= LOW_THRESHOLD) temp_buf1[y * HEIGHT + x] = 0;
+            else if(temp_buf4[y * HEIGHT + x] <= HIGH_THRESHOLD) temp_buf1[y * HEIGHT + x] = 100;
+            else if(temp_buf4[y * HEIGHT + x] > HIGH_THRESHOLD) temp_buf1[y * HEIGHT + x] = 255;
+            else temp_buf1[y * HEIGHT + x] = 0;
+        }
+    }
+
+}
+
+// temp_buf1 -> after thresholding
+// reszta "wolne"
+void track_edges(){
+    for(int y = 1; y < HEIGHT - 1; y++){
+        for(int x = 1; x < WIDTH - 1; x++){
+            if(temp_buf1[y * HEIGHT + x] == 255) temp_buf2[y * HEIGHT + x] = 255;
+            else if(temp_buf1[y * HEIGHT + x] == 100){
+                if(check_edge( y, x))
+                temp_buf2[y * HEIGHT + x] = 255;
+                else temp_buf2[y * HEIGHT + x] = 0;
+            }
+            else temp_buf2[y * HEIGHT + x] = 0;
+        }
+    }
+
+}
+
+int check_edge(uint8_t index_y, uint8_t index_x){
+    int connected = 0;
+    for(int col = index_y - 1; col <= index_y + 1; col++){
+        for(int row = index_x - 1; row <= index_x + 1; row++){
+            if(row == 0 && col == 0) break;
+            if(temp_buf1[col * HEIGHT + row] == 255) {
+                connected = 1;
+                break;
+            }
+            if(connected) break;
+        }
+    }
+    return connected;
 }

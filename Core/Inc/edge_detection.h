@@ -6,10 +6,13 @@
 
 #define WIDTH 80
 #define HEIGHT 80
+#define HIGH_THRESHOLD 150
+#define LOW_THRESHOLD 75
+
 extern uint8_t temp_buf1[WIDTH * HEIGHT];
 extern uint8_t temp_buf2[WIDTH * HEIGHT];
 extern uint8_t temp_buf3[WIDTH * HEIGHT];
-extern uint8_t temp_buf4[HEIGHT * WIDTH];
+extern uint8_t temp_buf4[WIDTH * HEIGHT];
 
 /**************GREYSCALE TRANSITION***************/
 void image_to_grayscale(uint16_t *image_input, uint8_t *image_output, uint8_t width, uint8_t height);
@@ -23,5 +26,6 @@ void count_gradient();
 void threshold();
 void track_edges();
 int round_angle(double angle);
+int check_edge(uint8_t index_y, uint8_t index_x);
 
 #endif
