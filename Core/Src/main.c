@@ -225,15 +225,17 @@ void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi) {
 
   for (int i = 0; i < DEST_WIDTH * DEST_HEIGHT; i++) {
     grayscale_buf[i] = grayscale_buf[i] < 150 ? 0 : 255;
-}
+  }
+
+  canny();
 
   memset(rgb565_buf, 0, sizeof(rgb565_buf));
 
   grayscale_to_rgb565(grayscale_buf, rgb565_buf, 80, 80);
 
   // ILI9341_draw_image_DMA(0, 120, 240, 80, (uint8_t *)frame_buffer);
-  ILI9341_draw_image_DMA(80, 120, 80, 80, (uint8_t*)cropped_frame);
-  // ILI9341_draw_image_DMA(80, 120, 80, 80, (uint8_t *) rgb565_buf);
+  // ILI9341_draw_image_DMA(80, 120, 80, 80, (uint8_t*)cropped_frame);
+  ILI9341_draw_image_DMA(80, 120, 80, 80, (uint8_t *) rgb565_buf);
 }
 
 
