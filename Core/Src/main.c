@@ -25,12 +25,14 @@
 #include "spi.h"
 #include "usart.h"
 #include "gpio.h"
+#include "edge_detection.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "ILI9341_driver.h"
 // #include "images/cat.h"
 #include <stdio.h>
+#include <string.h>
 #include "OV7670_driver/OV7670.h"
 /* USER CODE END Includes */
 
@@ -56,6 +58,8 @@ volatile uint8_t spi_dma_done = 0;
 
 uint32_t frame_buffer[ (OV7670_QVGA_HEIGHT * OV7670_QVGA_WIDTH)/8];
 uint32_t cropped_frame[(DEST_WIDTH * DEST_HEIGHT) / 2]; 
+uint8_t grayscale_buf[DEST_WIDTH * DEST_HEIGHT];
+uint16_t rgb565_buf[DEST_WIDTH * DEST_HEIGHT];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -215,8 +219,21 @@ void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi) {
   printf("Frame received!\r\n");
   OV7670_crop_to_80x80(frame_buffer, cropped_frame);
 
+  memset(grayscale_buf, 0, sizeof(grayscale_buf));
+
+  image_to_grayscale((uint16_t*) cropped_frame, grayscale_buf, 80, 80);
+
+  for (int i = 0; i < DEST_WIDTH * DEST_HEIGHT; i++) {
+    grayscale_buf[i] = grayscale_buf[i] < 150 ? 0 : 255;
+}
+
+  memset(rgb565_buf, 0, sizeof(rgb565_buf));
+
+  grayscale_to_rgb565(grayscale_buf, rgb565_buf, 80, 80);
+
   // ILI9341_draw_image_DMA(0, 120, 240, 80, (uint8_t *)frame_buffer);
   ILI9341_draw_image_DMA(80, 120, 80, 80, (uint8_t*)cropped_frame);
+  // ILI9341_draw_image_DMA(80, 120, 80, 80, (uint8_t *) rgb565_buf);
 }
 
 
