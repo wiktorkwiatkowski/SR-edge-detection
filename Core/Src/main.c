@@ -25,12 +25,12 @@
 #include "spi.h"
 #include "usart.h"
 #include "gpio.h"
-#include "edge_detection.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "ILI9341_driver.h"
 // #include "images/cat.h"
+#include "edge_detection.h"
 #include <stdio.h>
 #include <string.h>
 #include "OV7670_driver/OV7670.h"
@@ -43,6 +43,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define NORMAL 1
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -123,24 +124,12 @@ int main(void)
   HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_RESET);
 
   OV7670_start_capture((uint32_t)frame_buffer);
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1){
-  //   if (done == 0xff) {
-  //     printf("\n\rpoczatek\r\n");
 
-  //   while (offset < total) {
-  //     uint16_t chunk = (total - offset > 65535) ? 65535 : (total - offset);
-  //     HAL_UART_Transmit(&huart1, data + offset, chunk, HAL_MAX_DELAY);
-  //   offset += chunk;
-  //   }
-  //     done = 0x00;
-  //     printf("\n\rkoniec\r\n");
-  // }
-  
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -216,27 +205,25 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
 }
 
 void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi) {
-  printf("Frame received!\r\n");
   OV7670_crop_to_80x80(frame_buffer, cropped_frame);
-
+  
+  #if NORMAL
+  ILI9341_draw_image_DMA(80, 120, 80, 80, (uint8_t*)cropped_frame);
+  #else
   memset(grayscale_buf, 0, sizeof(grayscale_buf));
-
   image_to_grayscale((uint16_t*) cropped_frame, grayscale_buf, 80, 80);
-
-  for (int i = 0; i < DEST_WIDTH * DEST_HEIGHT; i++) {
-    grayscale_buf[i] = grayscale_buf[i] < 150 ? 0 : 255;
-  }
-
   canny();
-
   memset(rgb565_buf, 0, sizeof(rgb565_buf));
-
   grayscale_to_rgb565(grayscale_buf, rgb565_buf, 80, 80);
+  ILI9341_draw_image_DMA(80, 120, 80, 80, (uint8_t *) rgb565_buf);
+  #endif
+
+
+
 
   // ILI9341_draw_image_DMA(0, 120, 240, 80, (uint8_t *)frame_buffer);
-  // ILI9341_draw_image_DMA(80, 120, 80, 80, (uint8_t*)cropped_frame);
-  ILI9341_draw_image_DMA(80, 120, 80, 80, (uint8_t *) rgb565_buf);
 }
+
 
 
 /* USER CODE END 4 */

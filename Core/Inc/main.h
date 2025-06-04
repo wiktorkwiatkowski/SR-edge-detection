@@ -63,8 +63,8 @@ void Error_Handler(void);
 #define PH1_OSC_OUT_GPIO_Port GPIOH
 #define LCD_CS_Pin GPIO_PIN_2
 #define LCD_CS_GPIO_Port GPIOC
-#define B1_Pin GPIO_PIN_0
-#define B1_GPIO_Port GPIOA
+#define Button_Pin GPIO_PIN_0
+#define Button_GPIO_Port GPIOA
 #define CAMERA_RESET_Pin GPIO_PIN_4
 #define CAMERA_RESET_GPIO_Port GPIOC
 #define LCD_DC_Pin GPIO_PIN_13

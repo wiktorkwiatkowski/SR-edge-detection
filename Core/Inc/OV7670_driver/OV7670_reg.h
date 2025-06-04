@@ -46,9 +46,9 @@ const uint8_t OV7670_reg[][2] = {
     
     // bez + 8 działa lepiej
     // {0x3A, 0x04 + 8 }
-    {0x3A, 0x04},     // UYVY (why?)
+    {0x3A, 0x04},     // UYVY 
     {0x3D, 0x80},  // gamma enable, UV auto adjust, UYVY
-    {0xB0, 0x84},         // important
+    {0xB0, 0x84},       
     
     /* clock related */
     {0x11, 0x00},  // pre-scalar = 1/1 
@@ -58,7 +58,7 @@ const uint8_t OV7670_reg[][2] = {
     {0x71, 0x35},  // 
     {0x72, 0x11},  // down sample by 2 0010 0010
     {0x73, 0xf1},  // DSP clock /= 2
-    /* windowing (empirically decided...) */
+    /* windowing */
     {0x17, 0x16},
     {0x18, 0x04},
     {0x32, 0x80}, // HREF maska dolnych bitów

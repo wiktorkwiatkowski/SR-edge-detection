@@ -50,6 +50,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     Core/Src/ILI9341_driver.c
     Core/Src/OV7670.c
+    Core/Src/edge_detection.c
 )
 
 # Add include paths

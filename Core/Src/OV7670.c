@@ -91,8 +91,8 @@ HAL_StatusTypeDef OV7670_start_capture(uint32_t buffor) {
 }
 void OV7670_crop_to_80x80(uint32_t* src, uint32_t* dst) {
     for (int y = 0; y < DEST_HEIGHT; ++y) {
-        int src_offset = y * (SRC_WIDTH / 2);  // Przesuń do początku danego wiersza
-        int dst_offset = y * (DEST_WIDTH / 2); // Tam wrzucisz wynik
-        memcpy(&dst[dst_offset], &src[src_offset], DEST_WIDTH * 2); // 80 pikseli × 2 bajty
+        int src_offset = y * (SRC_WIDTH / 2);  
+        int dst_offset = y * (DEST_WIDTH / 2); 
+        memcpy(&dst[dst_offset], &src[src_offset], DEST_WIDTH * 2); 
     }
 }
